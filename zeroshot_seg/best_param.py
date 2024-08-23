@@ -16,6 +16,204 @@ best_prompt = {
     'rocket': ['ROCKET BODYThis is the body of a rocket.', 'A fin is typically a thin, flat surface that is attached to the back end of a rocket.', 'A nose cone on a rocket 3D model typically looks like a cone or pyramid shape.'],
     'skateboard': ['The depth map of the wheel on a skateboard is important.', 'Caption: The deck of a skateboard, viewed from the top.', 'This sentence is describing a strap or belt that goes around the foot of a skateboard.'],
     'table': ['A depth map of a table, showing the desktop at the top and the underside of the table at the bottom.', 'The table is a rectangle with a light gray color.', 'The table is a rectangle with a light gray color.'],
+    'Bottle': ['the lid of a bottle.', 'other'],
+    'Box': ['the lid of a box.', 'other'],
+    'Bucket': ['the handle of a bucket.', 'other'],
+    'Camera': ['the button of a camera', 'the lens of a camera', 'other'],
+    'Cart': ['wheel', 'other'],
+    'Chair': ['the arm of a chair', 'the back of a chair', 'the leg of a chair', 'the seat of a chair', 'the wheel of a chair', 'other'],
+    'Clock': ['the hand of a clock', 'other'],
+    'CoffeeMachine': ["the button of a coffee machine", "the container of a coffee machine", "the knob of a coffee machine","the lid of a coffee machine", "other"],
+    "Dishwasher": ["the door of a dishwasher", "the handle of a dishwasher", "other"],
+    "Dispenser": ["the head of a dispenser", "the lid of the dispenser", "other"],
+    "Display": [
+        "the base of a display",
+        "the screen of a display",
+        "the support of a display",
+        "other"
+    ],
+    "Door": [
+        "the frame of a door",
+        "the door",
+        "the handle of a door",
+        "other"
+    ],
+    "Eyeglasses": [
+        "the body of eyeglasses",
+        "the leg of eyeglasses",
+        "other"
+    ],
+    "Faucet": [
+        "the spout of a faucet",
+        "the switch of a faucet",
+        "other"
+    ],
+    "FoldingChair": [
+        "the seat of a folding chair",
+        "other"
+    ],
+    "Globe": [
+        "the sphere of a globe",
+        "other"
+    ],
+    "Kettle": [
+        "the lid of a kettle",
+        "the handle of a kettle",
+        "the spout of a kettle",
+        "other"
+    ],
+    "Keyboard": [
+        "the cord of a keyboard",
+        "the key of a keyboard",
+        "other"
+    ],
+    "KitchenPot": [
+        "the lid of a kitchen pot",
+        "the handle of a kitchen pot",
+        "other"
+    ],
+    "Knife": [
+        "the blade of a knife",
+        "other"
+    ],
+    "Lamp": [
+        "the base of a lamp",
+        "the body of a lamp",
+        "the bulb of a lamp",
+        "the shade of a lamp",
+        "other"
+    ],
+    "Laptop": [
+        "the keyboard of a laptop",
+        "the screen of a laptop",
+        "the shaft of a laptop",
+        "the touchpad of a laptop",
+        "the camera of a laptop",
+        "other"
+    ],
+    "Lighter": [
+        "the lid of a lighter",
+        "the wheel of a lighter",
+        "the button of a lighter",
+        "other"
+    ],
+    "Microwave": [
+        "the display of a microwave",
+        "the door of a microwave",
+        "the handle of a microwave",
+        "the button of a microwave",
+        "other"
+    ],
+    "Mouse": [
+        "the button of a mouse",
+        "the cord of a mouse",
+        "the wheel of a mouse",
+        "other"
+    ],
+    "Oven": [
+        "the door of an oven",
+        "the knob of an oven",
+        "other"
+    ],
+    "Pen": [
+        "the cap of a pen",
+        "the button of a pen",
+        "other"
+    ],
+    "Phone": [
+        "the lid of a phone",
+        "the button of a phone",
+        "other"
+    ],
+    "Pliers": [
+        "the leg of pliers",
+        "other"
+    ],
+    "Printer": [
+        "the button of a printer",
+        "other"
+    ],
+    "Refrigerator": [
+        "the door of a refrigerator",
+        "the handle of a refrigerator",
+        "other"
+    ],
+    "Remote": [
+        "the button of a remote",
+        "other"
+    ],
+    "Safe": [
+        "the door of a safe",
+        "the switch of a safe",
+        "the button of a safe",
+        "other"
+    ],
+    "Scissors": [
+        "the blade of scissors",
+        "the handle of scissors",
+        "the screw of scissors",
+        "other"
+    ],
+    "Stapler": [
+        "the body of stapler",
+        "the lid of stapler",
+        "other"
+    ],
+    "StorageFurniture": [
+        "the door of storage furniture",
+        "the drawer of storage furniture",
+        "the handle of storage furniture",
+        "other"
+    ],
+    "Suitcase": [
+        "the handle of suitcase",
+        "the wheel of suitcase",
+        "other"
+    ],
+    "Switch": [
+        "the switch",
+        "other"
+    ],
+    "Table": [
+        "the door of a table",
+        "the drawer of a table",
+        "the leg of a table",
+        "the tabletop",
+        "the wheel of a table",
+        "the handle of a table",
+        "other"
+    ],
+    "Toaster": [
+        "the button of a toaster",
+        "the slider of a toaster",
+        "other"
+    ],
+    "Toilet": [
+        "the lid of toilet",
+        "the seat of toilet",
+        "the button of toilet",
+        "other"
+    ],
+    "TrashCan": [
+        "the footpedal of trashcan",
+        "the lid of trashcan",
+        "the door of trashcan",
+        "other"
+    ],
+    "USB": [
+        "the cap of USB",
+        "the rotation of SSB",
+        "other"
+    ],
+    "WashingMachine": [
+        "the door of a washing machine",
+        "the button of a washing machine",
+        "other"
+    ],
+    "Window": [
+        "the window",
+        "other"
+    ]
 }
 
 best_vweight = {
@@ -35,6 +233,22 @@ best_vweight = {
     'rocket': [0.75, 0.75, 0.25, 0.25, 0.50, 1.00, 0.25, 0.50, 0.25, 0.75],
     'skateboard': [0.75, 0.75, 0.25, 0.50, 0.25, 1.00, 0.50, 0.25, 0.75, 1.00],
     'table': [1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00],
+    'Bottle': [1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00],
+    'Box': [1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00],
+    'Bucket': [1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00],
+    'Camera': [1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00],
+    'Cart': [1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00],
+    'Chair': [1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00],
+    'Clock': [1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00],
+    "CoffeeMachine": [1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00],
+    "Dishwasher": [1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00],
+    "Dispenser": [1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00],
+    "Display": [1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00],
+    "Door": [1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00],
+    "Eyeglasses": [1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00],
+    "Faucet": [1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00],
+    "FoldingChair": [1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00],
+    "Globe": [1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00]
 }
 
     

@@ -9,9 +9,10 @@ from torch.utils.data import DataLoader
 warnings.filterwarnings("ignore")
 
 from best_param import *
-from data import ShapeNetPart
+from data import ShapeNetPart, PartNetMobility
 from realistic_projection import Realistic_Projection
-from post_search import search_prompt, search_vweight
+from post_search import search_prompt, search_prompt_partm, search_vweight
+import time
 
 PC_NUM = 2048
 
@@ -58,12 +59,15 @@ def extract_feature_maps(model_name, data_path, class_choice, device):
         return 
     
     print('\nStart to extract and save feature maps of class {}...'.format(class_choice))
-    test_loader = DataLoader(ShapeNetPart(data_path, partition=mode, num_points=PC_NUM, class_choice=class_choice),
+    test_loader = DataLoader(PartNetMobility(class_choice, partition=mode, num_points=PC_NUM),
                             batch_size=1, shuffle=False, drop_last=False)
+    #test_loader = DataLoader(ShapeNetPart(data_path, partition=mode, num_points=PC_NUM, class_choice=class_choice),
+                            #batch_size=1, shuffle=False, drop_last=False)
     feat_store, label_store, pc_store = [], [], []
     ifseen_store, pointloc_store = [], []
     for data in tqdm(test_loader):
-        pc, cat, label = data
+        #eval shapenet-part
+        pc, label = data
         pc, label = pc.cuda(), label.cuda()
         with torch.no_grad():
             is_seen, point_loc_in_img, feat = segmentor(pc)
@@ -72,6 +76,7 @@ def extract_feature_maps(model_name, data_path, class_choice, device):
             label_store.append(label.squeeze()[None,:])
             ifseen_store.append(is_seen[None,:,:])
             pointloc_store.append(point_loc_in_img[None,:,:,:])
+
     pc_store = torch.cat(pc_store, dim=0)
     feat_store = torch.cat(feat_store, dim=0)
     label_store = torch.cat(label_store, dim=0)
@@ -101,7 +106,7 @@ def main(args):
     extract_feature_maps(model_name, data_path, class_choice, device)
 
     # test or post search prompt and view weights
-    prompts = search_prompt(class_choice, model_name, only_evaluate=only_evaluate)
+    prompts = search_prompt_partm(class_choice, model_name, only_evaluate=only_evaluate)
     if not only_evaluate:
         search_vweight(class_choice, model_name, prompts)
 
@@ -110,7 +115,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--modelname', default='ViT-B/16')
     parser.add_argument('--classchoice', default='table')
-    parser.add_argument('--datasetpath', default='data/')
+    parser.add_argument('--datasetpath', default='/data/ziqi/shapenetpart')
     parser.add_argument('--onlyevaluate', default=True)
     args = parser.parse_args()
+    stime = time.time()
     main(args)
+    etime = time.time()
+    print(etime-stime)
