@@ -121,6 +121,9 @@ def search_prompt_partm(class_choice, model_name, searched_prompt=None, only_eva
     
     if only_evaluate:
         print('\nFor class {}, part segmentation Acc: {}, IoU: {}.\n'.format(class_choice, acc, iou))
+        f = open("res.txt", "a")
+        f.write('\nFor class {}, part segmentation Acc: {}, IoU: {}.\n'.format(class_choice, acc, iou))
+        f.close()
         return
     
     print("\n***** Searching for prompts *****\n")

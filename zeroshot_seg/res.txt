@@ -1,0 +1,90 @@
+Bottle
+For class Bottle, part segmentation Acc: 31.697425842285156, IoU: 6.951970016236177.
+Box
+For class Box, part segmentation Acc: 40.93505859375, IoU: 26.7813719548811.
+Bucket
+For class Bucket, part segmentation Acc: 63.112098693847656, IoU: 2.561893123766133.
+Camera
+For class Camera, part segmentation Acc: 24.710399627685547, IoU: 6.03816944483876.
+Cart
+For class Cart, part segmentation Acc: 30.992040634155273, IoU: 11.321389019944538.
+Chair
+For class Chair, part segmentation Acc: 20.505136489868164, IoU: 8.313717217716702.
+Clock
+For class Clock, part segmentation Acc: 41.35954666137695, IoU: 0.8954859430151989.
+CoffeeMachine
+For class CoffeeMachine, part segmentation Acc: 31.36357879638672, IoU: 1.3366441937327171.
+Dishwasher
+For class Dishwasher, part segmentation Acc: 45.594482421875, IoU: 5.8066691592972415.
+Dispenser
+For class Dispenser, part segmentation Acc: 22.388193130493164, IoU: 4.910989598601208.
+Display
+For class Display, part segmentation Acc: 28.773235321044922, IoU: 10.19479872626034.
+Door
+For class Door, part segmentation Acc: 19.803293228149414, IoU: 8.646444416646494.
+Eyeglasses
+For class Eyeglasses, part segmentation Acc: 30.412212371826172, IoU: 21.00248393917001.
+Faucet
+For class Faucet, part segmentation Acc: 25.779321670532227, IoU: 10.785463123304899.
+FoldingChair
+For class FoldingChair, part segmentation Acc: 56.8223762512207, IoU: 39.444857308574306.
+Globe
+For class Globe, part segmentation Acc: 49.98617935180664, IoU: 42.10322038727995.
+Kettle
+For class Kettle, part segmentation Acc: 41.27371597290039, IoU: 4.3228759432778885.
+Keyboard
+For class Keyboard, part segmentation Acc: 24.51845359802246, IoU: 6.897385894062615.
+KitchenPot
+For class KitchenPot, part segmentation Acc: 46.846275329589844, IoU: 9.548094233444871.
+Knife
+For class Knife, part segmentation Acc: 52.26101303100586, IoU: 23.348603718457245.
+Lamp
+For class Lamp, part segmentation Acc: 13.661317825317383, IoU: 6.318874364506959.
+Laptop
+For class Laptop, part segmentation Acc: 10.03989315032959, IoU: 2.6434645847752534.
+Lighter
+For class Lighter, part segmentation Acc: 16.61865234375, IoU: 3.7541112115359274.
+Microwave
+For class Microwave, part segmentation Acc: 37.6953125, IoU: 1.0184338997022604.
+Mouse
+For class Mouse, part segmentation Acc: 20.947265625, IoU: 1.8372996569953943.
+Oven
+For class Oven, part segmentation Acc: 46.111507415771484, IoU: 5.388930708509456.
+Pen
+For class Pen, part segmentation Acc: 18.96240234375, IoU: 9.225948949306934.
+Phone
+For class Phone, part segmentation Acc: 26.020509719848633, IoU: 8.178166336962015.
+Pliers
+For class Pliers, part segmentation Acc: 88.73506164550781, IoU: 88.73506433823529.
+Printer
+For class Printer, part segmentation Acc: 36.07003402709961, IoU: 0.3654783452540916.
+Refrigerator
+For class Refrigerator, part segmentation Acc: 46.75021743774414, IoU: 6.144321276294142.
+Remote
+For class Remote, part segmentation Acc: 32.575504302978516, IoU: 9.133852165389412.
+Safe
+For class Safe, part segmentation Acc: 25.72576332092285, IoU: 2.9341746133891036.
+Scissors
+For class Scissors, part segmentation Acc: 7.322967052459717, IoU: 5.3224478292725586.
+Stapler
+For class Stapler, part segmentation Acc: 36.360679626464844, IoU: 24.33435843623461.
+StorageFurniture
+For class StorageFurniture, part segmentation Acc: 26.54227638244629, IoU: 3.9790689538580883.
+Suitcase
+For class Suitcase, part segmentation Acc: 17.7764892578125, IoU: 2.100171498515653.
+Switch
+For class Switch, part segmentation Acc: 26.33253288269043, IoU: 10.239255391033968.
+Table
+For class Table, part segmentation Acc: 14.46257495880127, IoU: 2.633518017109857.
+Toaster
+For class Toaster, part segmentation Acc: 44.904640197753906, IoU: 0.601143032865447.
+Toilet
+For class Toilet, part segmentation Acc: 21.38831901550293, IoU: 3.0278840945639964.
+TrashCan
+For class TrashCan, part segmentation Acc: 40.79038619995117, IoU: 2.383919978923405.
+USB
+For class USB, part segmentation Acc: 27.197265625, IoU: 13.528827677051103.
+WashingMachine
+For class WashingMachine, part segmentation Acc: 25.55881118774414, IoU: 3.7470334614099903.
+Window
+For class Window, part segmentation Acc: 47.937496185302734, IoU: 34.47229068108037.

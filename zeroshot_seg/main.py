@@ -98,23 +98,32 @@ def main(args):
     random.seed(0)
     device = "cuda:0"
     model_name = args.modelname
-    class_choice = args.classchoice
     data_path = args.datasetpath
     only_evaluate = args.onlyevaluate
 
-    # extract and save feature maps, labels, point locations
-    extract_feature_maps(model_name, data_path, class_choice, device)
+    classes = ["Bottle","Box","Bucket","Camera","Cart","Chair","Clock","CoffeeMachine",
+                "Dishwasher","Dispenser","Display","Door","Eyeglasses","Faucet","FoldingChair",
+                "Globe","Kettle","Keyboard","KitchenPot","Knife","Lamp","Laptop","Lighter",
+                "Microwave","Mouse","Oven","Pen","Phone","Pliers","Printer","Refrigerator",
+                "Remote","Safe","Scissors","Stapler","StorageFurniture","Suitcase","Switch",
+                "Table","Toaster","Toilet","TrashCan","USB","WashingMachine","Window"]
+    for class_choice in classes:
+        f = open("res.txt", "a")
+        f.write(f"{class_choice}")
+        f.close()
 
-    # test or post search prompt and view weights
-    prompts = search_prompt_partm(class_choice, model_name, only_evaluate=only_evaluate)
-    if not only_evaluate:
-        search_vweight(class_choice, model_name, prompts)
+        # extract and save feature maps, labels, point locations
+        extract_feature_maps(model_name, data_path, class_choice, device)
+
+        # test or post search prompt and view weights
+        prompts = search_prompt_partm(class_choice, model_name, only_evaluate=only_evaluate)
+        if not only_evaluate:
+            search_vweight(class_choice, model_name, prompts)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--modelname', default='ViT-B/16')
-    parser.add_argument('--classchoice', default='table')
     parser.add_argument('--datasetpath', default='/data/ziqi/shapenetpart')
     parser.add_argument('--onlyevaluate', default=True)
     args = parser.parse_args()
