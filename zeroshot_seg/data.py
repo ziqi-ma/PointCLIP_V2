@@ -108,9 +108,9 @@ def load_data_partseg(data_path, partition):
     #print(all_data.shape)
     # get random rotation
     # first time, generate random rotation
-    if not os.path.exists(f"{data_path}/random_rotation_test.pt"):
-        all_rotation = torch.rand(all_data.shape[0],3)*2*3.14
-        torch.save(all_rotation, f"{data_path}/random_rotation_test.pt")
+    #if not os.path.exists(f"{data_path}/random_rotation_test.pt"):
+        #all_rotation = torch.rand(all_data.shape[0],3)*2*3.14
+        #torch.save(all_rotation, f"{data_path}/random_rotation_test.pt")
     all_rotation = torch.load(f"{data_path}/random_rotation_test.pt")
 
     if partition == 'test':
@@ -139,7 +139,7 @@ def load_data_partseg(data_path, partition):
         return all_data1, all_label1, all_seg1
 
 
-class ShapeNetPart(Dataset):
+class ShapeNetPart(Dataset): # this is their code, only changing filepath
     def __init__(self, data_path='/data/ziqi/shapenetpart', num_points=2048, partition='test', class_choice=None):
         self.data, self.label, self.seg, self.rotation = load_data_partseg(data_path, partition)
         self.cat2id = {'airplane': 0, 'bag': 1, 'cap': 2, 'car': 3, 'chair': 4, 
@@ -155,7 +155,6 @@ class ShapeNetPart(Dataset):
             id_choice = self.cat2id[self.class_choice]
             indices = (self.label == id_choice).squeeze()
             self.data = self.data[indices]
-            print(self.data.shape)
             self.label = self.label[indices]
             self.seg = self.seg[indices]
             self.seg_num_all = self.seg_num[id_choice]
@@ -178,13 +177,63 @@ class ShapeNetPart(Dataset):
         return self.data.shape[0]
     
 
-class PartNetMobility(Dataset):
-    def __init__(self, class_choice, data_path='/data/ziqi/partnet-mobility/test', num_points=2048, partition='test'):
+class ShapeNetPartSmall(Dataset): # this is subsampling 10 per class
+    def __init__(self, data_path='/data/ziqi/shapenetpart', apply_rotation=False, num_points=2048, partition='test', class_choice=None):
+        self.data, self.label, self.seg, self.rotation = load_data_partseg(data_path, partition)
+        self.cat2id = {'airplane': 0, 'bag': 1, 'cap': 2, 'car': 3, 'chair': 4, 
+                       'earphone': 5, 'guitar': 6, 'knife': 7, 'lamp': 8, 'laptop': 9, 
+                       'motorbike': 10, 'mug': 11, 'pistol': 12, 'rocket': 13, 'skateboard': 14, 'table': 15}
+        self.seg_num = [4, 2, 2, 4, 4, 3, 3, 2, 4, 2, 6, 2, 3, 3, 3, 3]
+        self.index_start = [0, 4, 6, 8, 12, 16, 19, 22, 24, 28, 30, 36, 38, 41, 44, 47]
         self.num_points = num_points
         self.partition = partition        
         self.class_choice = class_choice
-        self.data_paths = [f"{data_path}/{class_choice}/{id}" for id in os.listdir(f"{data_path}/{class_choice}")]
-        print(len(self.data_paths))
+        self.apply_rotation = apply_rotation
+
+        if self.class_choice != None:
+            id_choice = self.cat2id[self.class_choice]
+            indices = (self.label == id_choice).squeeze()
+            self.data = self.data[indices]
+            self.label = self.label[indices]
+            self.seg = self.seg[indices]
+            self.seg_num_all = self.seg_num[id_choice]
+            self.seg_start_index = self.index_start[id_choice]
+            self.rotation = self.rotation[indices]
+            # get subset
+            subset_idxs = np.loadtxt(f"/data/ziqi/shapenetpart/{class_choice}_subsample.txt").astype(int)
+            print(subset_idxs)
+            self.data = self.data[subset_idxs]
+            self.label = self.label[subset_idxs]
+            self.seg = self.seg[subset_idxs]
+            self.rotation = self.rotation[subset_idxs]
+        else:
+            raise Exception("must have class")
+
+    def __getitem__(self, item):
+        pointcloud = self.data[item][:self.num_points]
+        seg = self.seg[item][:self.num_points]
+        
+        if self.apply_rotation:
+            # random rotation
+            rot = self.rotation[item,:]
+            rotated_pts = rotate_pts(torch.tensor(pointcloud), rot)
+            label = self.label[item]
+            return rotated_pts, seg
+        else:
+            return torch.tensor(pointcloud), seg
+    
+    def __len__(self):
+        return self.data.shape[0]
+    
+
+    
+
+class PartNetMobility(Dataset):
+    def __init__(self, class_choice, data_path='/data/ziqi/partnet-mobility/test', partition='test'):
+        self.partition = partition        
+        self.class_choice = class_choice
+        self.data_paths = [f"{data_path}/{class_choice}/{id}" for id in os.listdir(f"{data_path}/{class_choice}") if "delete" not in id and "txt" not in id]
+        #print(len(self.data_paths))
 
     def __getitem__(self, item):
         obj_dir = self.data_paths[item]
@@ -197,22 +246,43 @@ class PartNetMobility(Dataset):
         # random rotation
         rot = torch.load(f"{obj_dir}/rand_rotation.pt")
         rotated_pts = rotate_pts(torch.tensor(xyz), rot)
-        
-        # subsample 2048 pts
-        random_indices = torch.randint(0, rotated_pts.shape[0], (self.num_points,))
-        subsampled_pts = rotated_pts[random_indices]
-        labels = labels_in[random_indices]
-        return subsampled_pts, labels
+
+        return rotated_pts, labels_in # torch.tensor(xyz), labels_in
+    
+    def __len__(self):
+        return len(self.data_paths)
+    
+
+class PartNetMobilitySmall(Dataset):
+    def __init__(self, class_choice, data_path='/data/ziqi/partnet-mobility/test', partition='test'):
+        self.partition = partition        
+        self.class_choice = class_choice
+        with open(f"{data_path}/{class_choice}/subsampled_ids.txt", 'r') as f:
+            self.data_paths = f.read().splitlines()
+        print()
+
+    def __getitem__(self, item):
+        obj_dir = self.data_paths[item]
+        mesh = meshio.read(f"{obj_dir}/pc.ply")
+        xyz = np.asarray(mesh.points) 
+        xyz = xyz - xyz.mean(axis=0)
+        xyz = xyz / np.linalg.norm(xyz, ord=2, axis=1).max().item()
+        labels_in = torch.tensor(np.load(f"{obj_dir}/label.npy",allow_pickle=True).item()['semantic_seg'])
+
+        # random rotation
+        #rot = torch.load(f"{obj_dir}/rand_rotation.pt")
+        #rotated_pts = rotate_pts(torch.tensor(xyz), rot)
+
+        return torch.tensor(xyz), labels_in #rotated_pts, labels_in # 
     
     def __len__(self):
         return len(self.data_paths)
     
 
 class Objaverse(Dataset):
-    def __init__(self, data_path='/data/ziqi/objaverse/holdout', num_points=2048, partition='seenclass'):
-        self.num_points = num_points
+    def __init__(self, data_path='/data/ziqi/objaverse/holdout', partition='seenclass'):
         self.partition = partition
-        self.data_paths = [f"{data_path}/{partition}/{cat_id}" for cat_id in os.listdir(f"{data_path}/{partition}")]
+        self.data_paths = [f"{data_path}/{partition}/{cat_id}" for cat_id in os.listdir(f"{data_path}/{partition}") if "delete" not in cat_id]
 
     def __getitem__(self, item):
         obj_dir = self.data_paths[item]
@@ -228,16 +298,8 @@ class Objaverse(Dataset):
         label_texts = []
         for i in range(len(mapping)):
             label_texts.append(mapping[str(i+1)]) # label starts from 1
-
-        # random rotation
-        rot = torch.load(f"{obj_dir}/rand_rotation.pt")
-        rotated_pts = rotate_pts(torch.tensor(xyz).float(), rot)
         
-        # subsample 2048 pts
-        random_indices = torch.randint(0, rotated_pts.shape[0], (self.num_points,))
-        subsampled_pts = rotated_pts[random_indices]
-        labels = labels_in[random_indices]
-        return subsampled_pts, labels, label_texts, cat
+        return torch.tensor(xyz).float(), labels_in, label_texts, cat
     
     def __len__(self):
         return len(self.data_paths)

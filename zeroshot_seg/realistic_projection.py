@@ -26,6 +26,7 @@ class Grid2Image(nn.Module):
         self.conv.bias.data.fill_(0.)
             
     def forward(self, x, nnbatch, zz_int, yy, xx):
+        npts = yy.shape[-1]
         x = self.maxpool(x.unsqueeze(1)) 
         x = self.conv(x)
 
@@ -40,7 +41,7 @@ class Grid2Image(nn.Module):
         zz_int = torch.clip(zz_int, 1, params[net]['depth'] - 3)
         point_depth = torch.zeros_like(nnbatch).cuda()
         point_depth = grid[nnbatch.long(), torch.Tensor([0]*nnbatch.shape[0]).cuda().long(), zz_int.view(-1,).long(), yy.view(-1,).long(), xx.view(-1,).long()]
-        point_depth = point_depth.view(-1, 2048)
+        point_depth = point_depth.view(-1, npts)
         return img, point_depth
 
 def euler2mat(angle):

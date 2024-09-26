@@ -15,7 +15,6 @@ from post_search import textual_encoder, eval_sample_objaverse
 import time
 import numpy as np
 
-PC_NUM = 2048
 
 class Extractor(torch.nn.Module):
     def __init__(self, model):
@@ -50,7 +49,7 @@ def eval_objs(model_name, partition, device):
     segmentor = segmentor.to(device)
     segmentor.eval()
 
-    test_loader = DataLoader(Objaverse(num_points=PC_NUM, partition=partition), batch_size=1, shuffle=False, drop_last=False)
+    test_loader = DataLoader(Objaverse(partition=partition), batch_size=1, shuffle=False, drop_last=False)
     acc_store = []
     iou_store = []
     cat_acc = {}
@@ -87,6 +86,8 @@ def eval_objs(model_name, partition, device):
     for cat in cat_acc:
         mean_cat_accs.append(np.mean(cat_acc[cat]))
     for cat in cat_iou:
+        print(cat)
+        print(np.mean(cat_iou[cat]))
         mean_cat_ious.append(np.mean(cat_iou[cat]))
     cat_mean_acc = np.mean(mean_cat_accs)
     cat_mean_iou = np.mean(mean_cat_ious)
@@ -103,7 +104,8 @@ def main(args):
     model_name = args.modelname
 
     # extract and save feature maps, labels, point locations
-    eval_objs(model_name, "unseen", device)
+    eval_objs(model_name, "shapenetpart", device)
+    #eval_objs(model_name, "shapenetpart", device)
 
 
 if __name__ == '__main__':

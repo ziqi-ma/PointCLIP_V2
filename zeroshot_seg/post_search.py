@@ -9,7 +9,7 @@ from best_param import *
 from data import id2cat, cat2part
 from util import calculate_shape_IoU
 
-PC_NUM = 2048
+#PC_NUM = 2048 this changes for other datasets
 
 feat_dims = {'ViT-B/16':512, 'ViT-B/32':512, 'RN50':1024, 'RN101':512}
 cat2id = {'airplane': 0, 'bag': 1, 'cap': 2, 'car': 3, 'chair': 4, 
@@ -98,15 +98,15 @@ def search_prompt(class_choice, model_name, searched_prompt=None, only_evaluate=
 
 
 @torch.no_grad()
-def search_prompt_partm(class_choice, model_name, searched_prompt=None, only_evaluate=True):    
-    output_path = 'output/{}/{}'.format(model_name.replace('/', '_'), class_choice)
+def search_prompt_partm(class_choice, model_name, test_feat, test_label, test_ifseen, test_pointloc, searched_prompt=None, only_evaluate=True):    
+    # output_path = 'output/{}/{}'.format(model_name.replace('/', '_'), class_choice)
     
     # read saved feature maps, labels, point locations
-    print("\nReading saved feature maps of class {} ...".format(class_choice))
-    test_feat = torch.load(osp.join(output_path, "test_features.pt")).cuda()
-    test_label = torch.load(osp.join(output_path, "test_labels.pt"))
-    test_ifseen = torch.load(osp.join(output_path, "test_ifseen.pt"))
-    test_pointloc = torch.load(osp.join(output_path, "test_pointloc.pt"))
+    #print("\nReading saved feature maps of class {} ...".format(class_choice))
+    #test_feat = torch.load(osp.join(output_path, "test_features.pt")).cuda()
+    #test_label = torch.load(osp.join(output_path, "test_labels.pt"))
+    #test_ifseen = torch.load(osp.join(output_path, "test_ifseen.pt"))
+    #test_pointloc = torch.load(osp.join(output_path, "test_pointloc.pt"))
     test_feat = test_feat.reshape(-1, 10, 196, 512)
 
     # encoding textual features
@@ -120,11 +120,7 @@ def search_prompt_partm(class_choice, model_name, searched_prompt=None, only_eva
     acc, iou = run_epoch_partnetm(vweights, test_feat, test_label, test_ifseen, test_pointloc, text_feat, part_num, class_choice, model_name)
     
     if only_evaluate:
-        print('\nFor class {}, part segmentation Acc: {}, IoU: {}.\n'.format(class_choice, acc, iou))
-        f = open("res.txt", "a")
-        f.write('\nFor class {}, part segmentation Acc: {}, IoU: {}.\n'.format(class_choice, acc, iou))
-        f.close()
-        return
+        return acc, iou
     
     print("\n***** Searching for prompts *****\n")
     print('\nBefore prompt search, Acc: {}, IoU: {}.\n'.format(acc, iou))    
@@ -255,7 +251,7 @@ def run_epoch(vweights, val_feat, val_label, val_ifseen, val_pointloc, text_feat
     
     # calculating segmentation acc
     ratio = (pred_seg == label_seg)
-    acc = torch.sum(ratio.float(), dim=-1) / PC_NUM
+    acc = torch.sum(ratio.float(), dim=-1) / 2048
     acc = torch.mean(acc) * 100.
     
     # calculating iou
@@ -269,7 +265,7 @@ def run_epoch(vweights, val_feat, val_label, val_ifseen, val_pointloc, text_feat
 
 
 def run_epoch_partnetm(vweights, val_feat, val_label, val_ifseen, val_pointloc, text_feat, part_num, class_choice, model_name):
-    
+    PC_NUM = val_label.shape[-1]
     val_size = val_feat.shape[0]
     bs = 30
     iter = val_size // bs
@@ -297,15 +293,15 @@ def run_epoch_partnetm(vweights, val_feat, val_label, val_ifseen, val_pointloc, 
         output = upsample(output)
         
         # back-projecting to each points
-        nbatch = torch.repeat_interleave(torch.arange(0, nv*b)[:,None], 2048).view(-1, ).cuda().long()
+        nbatch = torch.repeat_interleave(torch.arange(0, nv*b)[:,None], PC_NUM).view(-1, ).cuda().long()
         yy = point_loc[:, :, 0].view(-1).long()
         xx = point_loc[:, :, 1].view(-1).long()
 
         point_logits = output[nbatch, :, yy, xx]
-        point_logits = point_logits.view(b, nv, 2048, part_num)
+        point_logits = point_logits.view(b, nv, PC_NUM, part_num)
         
         vweights = vweights.view(1, -1, 1, 1)
-        is_seen = is_seen.reshape(b, nv, 2048, 1)
+        is_seen = is_seen.reshape(b, nv, PC_NUM, 1)
 
         # points logits is the weighted sum of pixel logits
         point_logits = torch.sum(point_logits * vweights * is_seen, dim=1)
@@ -313,11 +309,11 @@ def run_epoch_partnetm(vweights, val_feat, val_label, val_ifseen, val_pointloc, 
         # last category is "other", set to -1
         point_seg[point_seg==point_logits.shape[2]-1] = -1
         
-        label = label.reshape(b, 2048)
+        label = label.reshape(b, PC_NUM)
         class_id = torch.Tensor([cat2id[class_choice]] * point_seg.shape[0])
         
-        pred_seg.append(point_seg.reshape(-1, 2048))
-        label_seg.append(label.reshape(-1, 2048))
+        pred_seg.append(point_seg.reshape(-1, PC_NUM))
+        label_seg.append(label.reshape(-1, PC_NUM))
         class_label.append(class_id.reshape(-1))
         
     pred_seg = torch.cat(pred_seg, dim=0)
@@ -343,7 +339,7 @@ def run_epoch_partnetm(vweights, val_feat, val_label, val_ifseen, val_pointloc, 
 
 
 def eval_sample_objaverse(feat, label, is_seen, point_loc, text_feat, part_num):
-    
+    PC_NUM = label.shape[-1]
     feat = feat.reshape(10, 196, 512)
     nv = feat.shape[0]
     hw = feat.shape[1]
@@ -363,13 +359,13 @@ def eval_sample_objaverse(feat, label, is_seen, point_loc, text_feat, part_num):
     output = upsample(output)
         
     # back-projecting to each points
-    nbatch = torch.repeat_interleave(torch.arange(0, nv)[:,None], 2048).view(-1, ).cuda().long()
+    nbatch = torch.repeat_interleave(torch.arange(0, nv)[:,None], PC_NUM).view(-1, ).cuda().long()
     yy = point_loc[:, :, 0].view(-1).long()
     xx = point_loc[:, :, 1].view(-1).long()
 
     point_logits = output[nbatch, :, yy, xx]
-    point_logits = point_logits.view(nv, 2048, part_num+1)
-    is_seen = is_seen.reshape(nv, 2048, 1)
+    point_logits = point_logits.view(nv, PC_NUM, part_num+1)
+    is_seen = is_seen.reshape(nv, PC_NUM, 1)
 
     # points logits is the weighted sum of pixel logits
     point_logits = torch.sum(point_logits * is_seen, dim=0)
@@ -377,7 +373,7 @@ def eval_sample_objaverse(feat, label, is_seen, point_loc, text_feat, part_num):
     # last category is "other", set to -1
     point_seg[point_seg==point_logits.shape[1]-1] = -1
         
-    label = label.reshape(2048)
+    label = label.reshape(PC_NUM)
     # calculating segmentation acc
     ratio = (point_seg == label).float()
     acc = torch.sum(ratio, dim=-1) / PC_NUM # acc of labeled objs

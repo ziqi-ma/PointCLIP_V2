@@ -1,0 +1,161 @@
+
+Start to extract and save feature maps of class airplane...
+[337 203  90  10 245 190 100 155 318  99]
+Save feature: ============================
+Save labels: =============================
+
+Reading saved feature maps of class airplane ...
+
+For class airplane, part segmentation Acc: 52.670902252197266, IoU: 26.311540569441956.
+
+
+Start to extract and save feature maps of class bag...
+[ 3 13  9  2  5 11 10  8 12  1]
+Save feature: ============================
+Save labels: =============================
+
+Reading saved feature maps of class bag ...
+
+For class bag, part segmentation Acc: 87.041015625, IoU: 62.39016421440463.
+
+
+Start to extract and save feature maps of class cap...
+[ 9  3  6  4 10  7  8  2  0  5]
+Save feature: ============================
+Save labels: =============================
+
+Reading saved feature maps of class cap ...
+
+For class cap, part segmentation Acc: 74.78515625, IoU: 53.23753045287659.
+
+
+Start to extract and save feature maps of class car...
+[ 10 148  45   6  98   7  59 128  48 133]
+Save feature: ============================
+Save labels: =============================
+
+Reading saved feature maps of class car ...
+
+For class car, part segmentation Acc: 57.275390625, IoU: 27.363605373585546.
+
+
+Start to extract and save feature maps of class chair...
+[451 145 289 636 496 253 175  20 264 531]
+Save feature: ============================
+Save labels: =============================
+
+Reading saved feature maps of class chair ...
+
+For class chair, part segmentation Acc: 66.611328125, IoU: 44.389851037300254.
+
+
+Start to extract and save feature maps of class earphone...
+[11  3  1 10  8  0  7  4  5  2]
+Save feature: ============================
+Save labels: =============================
+
+Reading saved feature maps of class earphone ...
+
+For class earphone, part segmentation Acc: 83.28125, IoU: 53.076255025351294.
+
+
+Start to extract and save feature maps of class guitar...
+[ 14  87  77 123 120  69  44  42  30  15]
+Save feature: ============================
+Save labels: =============================
+
+Reading saved feature maps of class guitar ...
+
+For class guitar, part segmentation Acc: 87.9052734375, IoU: 71.36457082735437.
+
+
+Start to extract and save feature maps of class knife...
+[17  4 26 24  0 14 48 54  2 72]
+Save feature: ============================
+Save labels: =============================
+
+Reading saved feature maps of class knife ...
+
+For class knife, part segmentation Acc: 88.1201171875, IoU: 79.88026673111118.
+
+
+Start to extract and save feature maps of class lamp...
+[125  60  32 258  59 227 260 274 123 267]
+Save feature: ============================
+Save labels: =============================
+
+Reading saved feature maps of class lamp ...
+
+For class lamp, part segmentation Acc: 55.3466796875, IoU: 48.13633454206908.
+
+
+Start to extract and save feature maps of class laptop...
+[10 14 60 70 33 42 53 54 76 38]
+Save feature: ============================
+Save labels: =============================
+
+Reading saved feature maps of class laptop ...
+
+For class laptop, part segmentation Acc: 78.359375, IoU: 63.85526245599669.
+
+
+Start to extract and save feature maps of class motorbike...
+[ 2 21 36 34 27 42  5 20 45 31]
+Save feature: ============================
+Save labels: =============================
+
+Reading saved feature maps of class motorbike ...
+
+For class motorbike, part segmentation Acc: 71.435546875, IoU: 27.762762012380648.
+
+
+Start to extract and save feature maps of class mug...
+[31 33 34 26  3 15  2  0 20 10]
+Save feature: ============================
+Save labels: =============================
+
+Reading saved feature maps of class mug ...
+
+For class mug, part segmentation Acc: 84.16015625, IoU: 48.36624928086698.
+
+
+Start to extract and save feature maps of class pistol...
+[13 36  5 40 18 32  6 37 43  1]
+Save feature: ============================
+Save labels: =============================
+
+Reading saved feature maps of class pistol ...
+
+For class pistol, part segmentation Acc: 80.5908203125, IoU: 46.6157532123243.
+
+
+Start to extract and save feature maps of class rocket...
+[ 1  0  9 11  7  3  8  6  4  2]
+Save feature: ============================
+Save labels: =============================
+
+Reading saved feature maps of class rocket ...
+
+For class rocket, part segmentation Acc: 71.044921875, IoU: 51.36413393906809.
+
+
+Start to extract and save feature maps of class skateboard...
+[ 6 10 19  0 27 21 18  7 14 22]
+Save feature: ============================
+Save labels: =============================
+
+Reading saved feature maps of class skateboard ...
+
+For class skateboard, part segmentation Acc: 87.763671875, IoU: 46.98934801039045.
+
+
+Start to extract and save feature maps of class table...
+[387 733 152 494 131 796 386 137 459 772]
+Save feature: ============================
+Save labels: =============================
+
+Reading saved feature maps of class table ...
+
+For class table, part segmentation Acc: 69.072265625, IoU: 43.6174905425952.
+
+137.5217308998108

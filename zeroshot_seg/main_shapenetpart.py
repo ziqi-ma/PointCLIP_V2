@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader
 warnings.filterwarnings("ignore")
 
 from best_param import *
-from data import ShapeNetPart, PartNetMobility
+from data import ShapeNetPart, ShapeNetPartSmall
 from realistic_projection import Realistic_Projection
 from post_search import search_prompt, search_prompt_partm, search_vweight
 import time
@@ -56,13 +56,10 @@ def extract_feature_maps(model_name, data_path, class_choice, device):
     if not os.path.exists(save_path):
         os.makedirs(save_path)
     if os.path.exists(os.path.join(save_path, "{}_features.pt".format(mode))):
-        return 
+        pass#return so that when we run diff experiments we don't reuse features
     
     print('\nStart to extract and save feature maps of class {}...'.format(class_choice))
-    test_loader = DataLoader(PartNetMobility(class_choice, partition=mode, num_points=PC_NUM),
-                            batch_size=1, shuffle=False, drop_last=False)
-    #test_loader = DataLoader(ShapeNetPart(data_path, partition=mode, num_points=PC_NUM, class_choice=class_choice),
-                            #batch_size=1, shuffle=False, drop_last=False)
+    test_loader = DataLoader(ShapeNetPartSmall(data_path, apply_rotation=False, partition=mode, num_points=PC_NUM, class_choice=class_choice),batch_size=1, shuffle=False, drop_last=False)#DataLoader(ShapeNetPart(data_path, partition=mode, num_points=PC_NUM, class_choice=class_choice),batch_size=1, shuffle=False, drop_last=False)
     feat_store, label_store, pc_store = [], [], []
     ifseen_store, pointloc_store = [], []
     for data in tqdm(test_loader):
@@ -100,23 +97,16 @@ def main(args):
     model_name = args.modelname
     data_path = args.datasetpath
     only_evaluate = args.onlyevaluate
-
-    classes = ["Bottle","Box","Bucket","Camera","Cart","Chair","Clock","CoffeeMachine",
-                "Dishwasher","Dispenser","Display","Door","Eyeglasses","Faucet","FoldingChair",
-                "Globe","Kettle","Keyboard","KitchenPot","Knife","Lamp","Laptop","Lighter",
-                "Microwave","Mouse","Oven","Pen","Phone","Pliers","Printer","Refrigerator",
-                "Remote","Safe","Scissors","Stapler","StorageFurniture","Suitcase","Switch",
-                "Table","Toaster","Toilet","TrashCan","USB","WashingMachine","Window"]
+    classes = ['airplane', 'bag', 'cap', 'car', 'chair', 'earphone', 'guitar',
+                'knife', 'lamp', 'laptop', 'motorbike', 'mug', 'pistol', 'rocket',
+                'skateboard', 'table']
     for class_choice in classes:
-        f = open("res.txt", "a")
-        f.write(f"{class_choice}")
-        f.close()
 
         # extract and save feature maps, labels, point locations
         extract_feature_maps(model_name, data_path, class_choice, device)
 
         # test or post search prompt and view weights
-        prompts = search_prompt_partm(class_choice, model_name, only_evaluate=only_evaluate)
+        prompts = search_prompt(class_choice, model_name, only_evaluate=only_evaluate)
         if not only_evaluate:
             search_vweight(class_choice, model_name, prompts)
 
