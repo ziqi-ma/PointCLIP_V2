@@ -59,7 +59,7 @@ def extract_feature_maps(model_name, data_path, class_choice, device):
         #return 
     
     print('\nStart to extract and save feature maps of class {}...'.format(class_choice))
-    test_loader = DataLoader(PartNetMobilitySmall(class_choice, partition=mode),batch_size=1, shuffle=False, drop_last=False) #DataLoader(PartNetMobility(class_choice, partition=mode),batch_size=1, shuffle=False, drop_last=False)
+    test_loader = DataLoader(PartNetMobilitySmall(class_choice, partition=mode, apply_rotation=False),batch_size=1, shuffle=False, drop_last=False) #DataLoader(PartNetMobility(class_choice, partition=mode),batch_size=1, shuffle=False, drop_last=False)
     accs = []
     ious = []
     for data in tqdm(test_loader):

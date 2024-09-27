@@ -254,12 +254,12 @@ class PartNetMobility(Dataset):
     
 
 class PartNetMobilitySmall(Dataset):
-    def __init__(self, class_choice, data_path='/data/ziqi/partnet-mobility/test', partition='test'):
+    def __init__(self, class_choice, data_path='/data/ziqi/partnet-mobility/test', apply_rotation=False, partition='test'):
         self.partition = partition        
         self.class_choice = class_choice
+        self.apply_rotation = apply_rotation
         with open(f"{data_path}/{class_choice}/subsampled_ids.txt", 'r') as f:
             self.data_paths = f.read().splitlines()
-        print()
 
     def __getitem__(self, item):
         obj_dir = self.data_paths[item]
@@ -270,10 +270,12 @@ class PartNetMobilitySmall(Dataset):
         labels_in = torch.tensor(np.load(f"{obj_dir}/label.npy",allow_pickle=True).item()['semantic_seg'])
 
         # random rotation
-        #rot = torch.load(f"{obj_dir}/rand_rotation.pt")
-        #rotated_pts = rotate_pts(torch.tensor(xyz), rot)
-
-        return torch.tensor(xyz), labels_in #rotated_pts, labels_in # 
+        if self.apply_rotation:
+            rot = torch.load(f"{obj_dir}/rand_rotation.pt")
+            rotated_pts = rotate_pts(torch.tensor(xyz), rot)
+            return rotated_pts, labels_in
+        else:
+            return torch.tensor(xyz), labels_in #rotated_pts, labels_in # 
     
     def __len__(self):
         return len(self.data_paths)

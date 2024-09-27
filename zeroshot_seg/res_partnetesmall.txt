@@ -179,4 +179,4 @@ Start to extract and save feature maps of class Window...
 
 for class Window, acc 62.537330627441406, iou 58.174257265228036
 overall acc 30.339935302734375, overall iou 10.970724371257567
-2793.377808570862
+1215.142080783844
