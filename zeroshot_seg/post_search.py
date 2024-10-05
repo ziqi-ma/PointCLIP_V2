@@ -387,10 +387,10 @@ def eval_sample_objaverse(feat, label, is_seen, point_loc, text_feat, part_num):
         I = np.sum(np.logical_and(point_seg == part, label == part))
         U = np.sum(np.logical_or(point_seg == part, label == part))
         if U == 0:
-            iou = 1  # If the union of groundtruth and prediction points is empty, then count part IoU as 1
+            pass  # If the union of groundtruth and prediction points is empty, then count part IoU as 1
         else:
             iou = I / float(U)
-        part_ious.append(iou)
+            part_ious.append(iou)
     mean_iou = np.mean(part_ious)*100.
     return acc, mean_iou
 

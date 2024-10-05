@@ -104,7 +104,7 @@ def main(args):
     model_name = args.modelname
 
     # extract and save feature maps, labels, point locations
-    eval_objs(model_name, "shapenetpart", device)
+    eval_objs(model_name, "unseen", device)
     #eval_objs(model_name, "shapenetpart", device)
 
 

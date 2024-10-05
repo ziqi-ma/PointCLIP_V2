@@ -201,7 +201,6 @@ class ShapeNetPartSmall(Dataset): # this is subsampling 10 per class
             self.rotation = self.rotation[indices]
             # get subset
             subset_idxs = np.loadtxt(f"/data/ziqi/shapenetpart/{class_choice}_subsample.txt").astype(int)
-            print(subset_idxs)
             self.data = self.data[subset_idxs]
             self.label = self.label[subset_idxs]
             self.seg = self.seg[subset_idxs]
@@ -229,37 +228,15 @@ class ShapeNetPartSmall(Dataset): # this is subsampling 10 per class
     
 
 class PartNetMobility(Dataset):
-    def __init__(self, class_choice, data_path='/data/ziqi/partnet-mobility/test', partition='test'):
-        self.partition = partition        
-        self.class_choice = class_choice
-        self.data_paths = [f"{data_path}/{class_choice}/{id}" for id in os.listdir(f"{data_path}/{class_choice}") if "delete" not in id and "txt" not in id]
-        #print(len(self.data_paths))
-
-    def __getitem__(self, item):
-        obj_dir = self.data_paths[item]
-        mesh = meshio.read(f"{obj_dir}/pc.ply")
-        xyz = np.asarray(mesh.points) 
-        xyz = xyz - xyz.mean(axis=0)
-        xyz = xyz / np.linalg.norm(xyz, ord=2, axis=1).max().item()
-        labels_in = torch.tensor(np.load(f"{obj_dir}/label.npy",allow_pickle=True).item()['semantic_seg'])
-
-        # random rotation
-        rot = torch.load(f"{obj_dir}/rand_rotation.pt")
-        rotated_pts = rotate_pts(torch.tensor(xyz), rot)
-
-        return rotated_pts, labels_in # torch.tensor(xyz), labels_in
-    
-    def __len__(self):
-        return len(self.data_paths)
-    
-
-class PartNetMobilitySmall(Dataset):
-    def __init__(self, class_choice, data_path='/data/ziqi/partnet-mobility/test', apply_rotation=False, partition='test'):
+    def __init__(self, class_choice, data_path='/data/ziqi/partnet-mobility/test', apply_rotation=False, subset=False, partition='test'):
         self.partition = partition        
         self.class_choice = class_choice
         self.apply_rotation = apply_rotation
-        with open(f"{data_path}/{class_choice}/subsampled_ids.txt", 'r') as f:
-            self.data_paths = f.read().splitlines()
+        if subset:
+            with open(f"{data_path}/{class_choice}/subsampled_ids.txt", 'r') as f:
+                self.data_paths = f.read().splitlines()
+        else:
+            self.data_paths = [f"{data_path}/{class_choice}/{id}" for id in os.listdir(f"{data_path}/{class_choice}") if "txt" not in id]
 
     def __getitem__(self, item):
         obj_dir = self.data_paths[item]
@@ -268,14 +245,13 @@ class PartNetMobilitySmall(Dataset):
         xyz = xyz - xyz.mean(axis=0)
         xyz = xyz / np.linalg.norm(xyz, ord=2, axis=1).max().item()
         labels_in = torch.tensor(np.load(f"{obj_dir}/label.npy",allow_pickle=True).item()['semantic_seg'])
-
-        # random rotation
+        
         if self.apply_rotation:
             rot = torch.load(f"{obj_dir}/rand_rotation.pt")
             rotated_pts = rotate_pts(torch.tensor(xyz), rot)
             return rotated_pts, labels_in
         else:
-            return torch.tensor(xyz), labels_in #rotated_pts, labels_in # 
+            return torch.tensor(xyz), labels_in
     
     def __len__(self):
         return len(self.data_paths)
@@ -288,7 +264,7 @@ class Objaverse(Dataset):
 
     def __getitem__(self, item):
         obj_dir = self.data_paths[item]
-        cat = obj_dir.split("/")[-1].split("_")[0]
+        cat = " ".join(obj_dir.split("/")[-1].split("_")[:-1])
         pcd = o3d.io.read_point_cloud(f"{obj_dir}/points5000.pcd")
         xyz = np.asarray(pcd.points)
         xyz = xyz - xyz.mean(axis=0)
@@ -301,6 +277,7 @@ class Objaverse(Dataset):
         for i in range(len(mapping)):
             label_texts.append(mapping[str(i+1)]) # label starts from 1
         
+        label_texts = [f"{part} of a {cat}" for part in label_texts]
         return torch.tensor(xyz).float(), labels_in, label_texts, cat
     
     def __len__(self):

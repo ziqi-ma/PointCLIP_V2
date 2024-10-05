@@ -16,202 +16,202 @@ best_prompt = {
     'rocket': ['ROCKET BODYThis is the body of a rocket.', 'A fin is typically a thin, flat surface that is attached to the back end of a rocket.', 'A nose cone on a rocket 3D model typically looks like a cone or pyramid shape.'],
     'skateboard': ['The depth map of the wheel on a skateboard is important.', 'Caption: The deck of a skateboard, viewed from the top.', 'This sentence is describing a strap or belt that goes around the foot of a skateboard.'],
     'table': ['A depth map of a table, showing the desktop at the top and the underside of the table at the bottom.', 'The table is a rectangle with a light gray color.', 'The table is a rectangle with a light gray color.'],
-    'Bottle': ['the lid of a bottle.', 'other'],
-    'Box': ['the lid of a box.', 'other'],
-    'Bucket': ['the handle of a bucket.', 'other'],
-    'Camera': ['the button of a camera', 'the lens of a camera', 'other'],
-    'Cart': ['wheel', 'other'],
-    'Chair': ['the arm of a chair', 'the back of a chair', 'the leg of a chair', 'the seat of a chair', 'the wheel of a chair', 'other'],
-    'Clock': ['the hand of a clock', 'other'],
-    'CoffeeMachine': ["the button of a coffee machine", "the container of a coffee machine", "the knob of a coffee machine","the lid of a coffee machine", "other"],
-    "Dishwasher": ["the door of a dishwasher", "the handle of a dishwasher", "other"],
-    "Dispenser": ["the head of a dispenser", "the lid of the dispenser", "other"],
+    'Bottle': ['lid of a bottle', 'other'],
+    'Box': ['lid of a box', 'other'],
+    'Bucket': ['handle of a bucket', 'other'],
+    'Camera': ['button of a camera', 'lens of a camera', 'other'],
+    'Cart': ['wheel of a cart', 'other'],
+    'Chair': ['arm of a chair', 'back of a chair', 'leg of a chair', 'seat of a chair', 'wheel of a chair', 'other'],
+    'Clock': ['hand of a clock', 'other'],
+    'CoffeeMachine': ["button of a coffee machine", "container of a coffee machine", "knob of a coffee machine","lid of a coffee machine", "other"],
+    "Dishwasher": ["door of a dishwasher", "handle of a dishwasher", "other"],
+    "Dispenser": ["head of a dispenser", "lid of the dispenser", "other"],
     "Display": [
-        "the base of a display",
-        "the screen of a display",
-        "the support of a display",
+        "base of a display",
+        "screen of a display",
+        "support of a display",
         "other"
     ],
     "Door": [
-        "the frame of a door",
-        "the door",
-        "the handle of a door",
+        "frame of a door",
+        "door",
+        "handle of a door",
         "other"
     ],
     "Eyeglasses": [
-        "the body of eyeglasses",
-        "the leg of eyeglasses",
+        "body of eyeglasses",
+        "leg of eyeglasses",
         "other"
     ],
     "Faucet": [
-        "the spout of a faucet",
-        "the switch of a faucet",
+        "spout of a faucet",
+        "switch of a faucet",
         "other"
     ],
     "FoldingChair": [
-        "the seat of a folding chair",
+        "seat of a folding chair",
         "other"
     ],
     "Globe": [
-        "the sphere of a globe",
+        "sphere of a globe",
         "other"
     ],
     "Kettle": [
-        "the lid of a kettle",
-        "the handle of a kettle",
-        "the spout of a kettle",
+        "lid of a kettle",
+        "handle of a kettle",
+        "spout of a kettle",
         "other"
     ],
     "Keyboard": [
-        "the cord of a keyboard",
-        "the key of a keyboard",
+        "cord of a keyboard",
+        "key of a keyboard",
         "other"
     ],
     "KitchenPot": [
-        "the lid of a kitchen pot",
-        "the handle of a kitchen pot",
+        "lid of a kitchen pot",
+        "handle of a kitchen pot",
         "other"
     ],
     "Knife": [
-        "the blade of a knife",
+        "blade of a knife",
         "other"
     ],
     "Lamp": [
-        "the base of a lamp",
-        "the body of a lamp",
-        "the bulb of a lamp",
-        "the shade of a lamp",
+        "base of a lamp",
+        "body of a lamp",
+        "bulb of a lamp",
+        "shade of a lamp",
         "other"
     ],
     "Laptop": [
-        "the keyboard of a laptop",
-        "the screen of a laptop",
-        "the shaft of a laptop",
-        "the touchpad of a laptop",
-        "the camera of a laptop",
+        "keyboard of a laptop",
+        "screen of a laptop",
+        "shaft of a laptop",
+        "touchpad of a laptop",
+        "camera of a laptop",
         "other"
     ],
     "Lighter": [
-        "the lid of a lighter",
-        "the wheel of a lighter",
-        "the button of a lighter",
+        "lid of a lighter",
+        "wheel of a lighter",
+        "button of a lighter",
         "other"
     ],
     "Microwave": [
-        "the display of a microwave",
-        "the door of a microwave",
-        "the handle of a microwave",
-        "the button of a microwave",
+        "display of a microwave",
+        "door of a microwave",
+        "handle of a microwave",
+        "button of a microwave",
         "other"
     ],
     "Mouse": [
-        "the button of a mouse",
-        "the cord of a mouse",
-        "the wheel of a mouse",
+        "button of a mouse",
+        "cord of a mouse",
+        "wheel of a mouse",
         "other"
     ],
     "Oven": [
-        "the door of an oven",
-        "the knob of an oven",
+        "door of an oven",
+        "knob of an oven",
         "other"
     ],
     "Pen": [
-        "the cap of a pen",
-        "the button of a pen",
+        "cap of a pen",
+        "button of a pen",
         "other"
     ],
     "Phone": [
-        "the lid of a phone",
-        "the button of a phone",
+        "lid of a phone",
+        "button of a phone",
         "other"
     ],
     "Pliers": [
-        "the leg of pliers",
+        "leg of pliers",
         "other"
     ],
     "Printer": [
-        "the button of a printer",
+        "button of a printer",
         "other"
     ],
     "Refrigerator": [
-        "the door of a refrigerator",
-        "the handle of a refrigerator",
+        "door of a refrigerator",
+        "handle of a refrigerator",
         "other"
     ],
     "Remote": [
-        "the button of a remote",
+        "button of a remote",
         "other"
     ],
     "Safe": [
-        "the door of a safe",
-        "the switch of a safe",
-        "the button of a safe",
+        "door of a safe",
+        "switch of a safe",
+        "button of a safe",
         "other"
     ],
     "Scissors": [
-        "the blade of scissors",
-        "the handle of scissors",
-        "the screw of scissors",
+        "blade of scissors",
+        "handle of scissors",
+        "screw of scissors",
         "other"
     ],
     "Stapler": [
-        "the body of stapler",
-        "the lid of stapler",
+        "body of stapler",
+        "lid of stapler",
         "other"
     ],
     "StorageFurniture": [
-        "the door of storage furniture",
-        "the drawer of storage furniture",
-        "the handle of storage furniture",
+        "door of storage furniture",
+        "drawer of storage furniture",
+        "handle of storage furniture",
         "other"
     ],
     "Suitcase": [
-        "the handle of suitcase",
-        "the wheel of suitcase",
+        "handle of suitcase",
+        "wheel of suitcase",
         "other"
     ],
     "Switch": [
-        "the switch",
+        "switch",
         "other"
     ],
     "Table": [
-        "the door of a table",
-        "the drawer of a table",
-        "the leg of a table",
-        "the tabletop",
-        "the wheel of a table",
-        "the handle of a table",
+        "door of a table",
+        "drawer of a table",
+        "leg of a table",
+        "tabletop of a table",
+        "wheel of a table",
+        "handle of a table",
         "other"
     ],
     "Toaster": [
-        "the button of a toaster",
-        "the slider of a toaster",
+        "button of a toaster",
+        "slider of a toaster",
         "other"
     ],
     "Toilet": [
-        "the lid of toilet",
-        "the seat of toilet",
-        "the button of toilet",
+        "lid of toilet",
+        "seat of toilet",
+        "button of toilet",
         "other"
     ],
     "TrashCan": [
-        "the footpedal of trashcan",
-        "the lid of trashcan",
-        "the door of trashcan",
+        "footpedal of trashcan",
+        "lid of trashcan",
+        "door of trashcan",
         "other"
     ],
     "USB": [
-        "the cap of USB",
-        "the rotation of SSB",
+        "cap of USB",
+        "rotation of SSB",
         "other"
     ],
     "WashingMachine": [
-        "the door of a washing machine",
-        "the button of a washing machine",
+        "door of a washing machine",
+        "button of a washing machine",
         "other"
     ],
     "Window": [
-        "the window",
+        "window of a window",
         "other"
     ]
 }
