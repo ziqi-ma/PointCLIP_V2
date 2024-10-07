@@ -1,0 +1,82 @@
+Save feature: ============================
+Save labels: =============================
+
+For class airplane, part segmentation Acc: 11.233332633972168, IoU: 4.541774609190822.
+
+Save feature: ============================
+Save labels: =============================
+
+For class bag, part segmentation Acc: 51.084686279296875, IoU: 28.22760968436021.
+
+Save feature: ============================
+Save labels: =============================
+
+For class cap, part segmentation Acc: 65.97123718261719, IoU: 35.318881028992436.
+
+Save feature: ============================
+Save labels: =============================
+
+For class car, part segmentation Acc: 7.785614013671875, IoU: 3.8189124351018227.
+
+Save feature: ============================
+Save labels: =============================
+
+For class chair, part segmentation Acc: 28.504457473754883, IoU: 15.43003469591519.
+
+Save feature: ============================
+Save labels: =============================
+
+For class earphone, part segmentation Acc: 65.9912109375, IoU: 35.353607598607496.
+
+Save feature: ============================
+Save labels: =============================
+
+For class guitar, part segmentation Acc: 30.19881248474121, IoU: 18.041980876727028.
+
+Save feature: ============================
+Save labels: =============================
+
+For class knife, part segmentation Acc: 66.3543701171875, IoU: 48.991011486208805.
+
+Save feature: ============================
+Save labels: =============================
+
+For class lamp, part segmentation Acc: 40.82936096191406, IoU: 30.970137309392516.
+
+Save feature: ============================
+Save labels: =============================
+
+For class laptop, part segmentation Acc: 50.87948989868164, IoU: 30.145485727563592.
+
+Save feature: ============================
+Save labels: =============================
+
+For class motorbike, part segmentation Acc: 7.925475597381592, IoU: 2.805701991722001.
+
+Save feature: ============================
+Save labels: =============================
+
+For class mug, part segmentation Acc: 50.26469802856445, IoU: 26.670208931641714.
+
+Save feature: ============================
+Save labels: =============================
+
+For class pistol, part segmentation Acc: 61.446868896484375, IoU: 23.800492120982764.
+
+Save feature: ============================
+Save labels: =============================
+
+For class rocket, part segmentation Acc: 27.01416015625, IoU: 13.304405684762385.
+
+Save feature: ============================
+Save labels: =============================
+
+For class skateboard, part segmentation Acc: 48.33039093017578, IoU: 18.854946475814955.
+
+Save feature: ============================
+Save labels: =============================
+
+For class table, part segmentation Acc: 29.179931640625, IoU: 11.550089825941786.
+
+mean iou: 21.739080030182844
+287.8209295272827
