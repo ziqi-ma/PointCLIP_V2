@@ -41,7 +41,7 @@ class Extractor(torch.nn.Module):
         return is_seen, point_loc_in_img, x
 
 
-def extract_feature_maps(model_name, data_path, class_choice, device):
+def extract_feature_maps(model_name, data_path, class_choice, device, apply_rotation = False, subset=False, decorated=True):
     model, _ = clip.load(model_name, device=device)
     model.to(device)
 
@@ -58,8 +58,8 @@ def extract_feature_maps(model_name, data_path, class_choice, device):
     #if os.path.exists(os.path.join(save_path, "{}_features.pt".format(mode))):
         #return 
     
-    print('\nStart to extract and save feature maps of class {}...'.format(class_choice))
-    test_loader = DataLoader(PartNetMobility(class_choice, partition=mode, apply_rotation=False, subset=False),batch_size=1, shuffle=False, drop_last=False) #DataLoader(PartNetMobility(class_choice, partition=mode),batch_size=1, shuffle=False, drop_last=False)
+    #print('\nStart to extract and save feature maps of class {}...'.format(class_choice))
+    test_loader = DataLoader(PartNetMobility(class_choice, partition=mode, apply_rotation=apply_rotation, subset=subset),batch_size=1, shuffle=False, drop_last=False)
     accs = []
     ious = []
     for data in tqdm(test_loader):
@@ -92,7 +92,7 @@ def extract_feature_maps(model_name, data_path, class_choice, device):
             #torch.save(label_store, os.path.join(save_path, "{}_labels.pt".format(mode)))
             #torch.save(ifseen_store,  os.path.join(save_path, "{}_ifseen.pt".format(mode)))
             #torch.save(pointloc_store, os.path.join(save_path, "{}_pointloc.pt".format(mode)))
-            acc, iou = search_prompt_partm(class_choice, model_name, feat_store, label_store, ifseen_store, pointloc_store, only_evaluate=True)
+            acc, iou = search_prompt_partm(class_choice, model_name, feat_store, label_store, ifseen_store, pointloc_store, decorated=decorated, only_evaluate=True)
             accs.append(acc.cpu().numpy())
             ious.append(iou)
     mean_acc = np.mean(accs)
@@ -119,7 +119,7 @@ def main(args):
     for class_choice in classes:
 
         # extract and save feature maps, labels, point locations
-        acc, iou = extract_feature_maps(model_name, data_path, class_choice, device)
+        acc, iou = extract_feature_maps(model_name, data_path, class_choice, device, apply_rotation = args.apply_rotation, subset=args.subset, decorated=args.decorated)
         accs.append(acc)
         ious.append(iou)
         print(f"for class {class_choice}, acc {acc}, iou {iou}")
@@ -136,6 +136,9 @@ if __name__ == '__main__':
     parser.add_argument('--datasetpath', default='/data/ziqi/shapenetpart')
     parser.add_argument('--onlyevaluate', default=True)
     args = parser.parse_args()
+    args.subset = False
+    args.apply_rotation = False
+    args.decorated = False
     stime = time.time()
     main(args)
     etime = time.time()

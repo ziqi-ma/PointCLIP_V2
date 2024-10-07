@@ -8,6 +8,7 @@ import torch
 import meshio
 import open3d as o3d
 import json
+from best_param import *
 
 id2cat = ['airplane', 'bag', 'cap', 'car', 'chair', 'earphone', 'guitar', 'knife', 'lamp', 'laptop', 
         'motorbike', 'mug', 'pistol', 'rocket', 'skateboard', 'table']
@@ -140,7 +141,7 @@ def load_data_partseg(data_path, partition):
 
 
 class ShapeNetPart(Dataset): # this is their code, only changing filepath
-    def __init__(self, data_path='/data/ziqi/shapenetpart', num_points=2048, partition='test', class_choice=None):
+    def __init__(self, data_path='/data/ziqi/shapenetpart', apply_rotation = False, num_points=2048, partition='test', class_choice=None):
         self.data, self.label, self.seg, self.rotation = load_data_partseg(data_path, partition)
         self.cat2id = {'airplane': 0, 'bag': 1, 'cap': 2, 'car': 3, 'chair': 4, 
                        'earphone': 5, 'guitar': 6, 'knife': 7, 'lamp': 8, 'laptop': 9, 
@@ -150,6 +151,7 @@ class ShapeNetPart(Dataset): # this is their code, only changing filepath
         self.num_points = num_points
         self.partition = partition        
         self.class_choice = class_choice
+        self.apply_rotation = apply_rotation
 
         if self.class_choice != None:
             id_choice = self.cat2id[self.class_choice]
@@ -168,7 +170,10 @@ class ShapeNetPart(Dataset): # this is their code, only changing filepath
         pointcloud = self.data[item][:self.num_points]
         # random rotation
         rot = self.rotation[item,:]
-        rotated_pts = rotate_pts(torch.tensor(pointcloud), rot)
+        if self.apply_rotation:
+           rotated_pts = rotate_pts(torch.tensor(pointcloud), rot)
+        else:
+            rotated_pts = torch.tensor(pointcloud)
         label = self.label[item]
         seg = self.seg[item][:self.num_points]
         return rotated_pts, seg
@@ -258,8 +263,10 @@ class PartNetMobility(Dataset):
     
 
 class Objaverse(Dataset):
-    def __init__(self, data_path='/data/ziqi/objaverse/holdout', partition='seenclass'):
+    def __init__(self, data_path='/data/ziqi/objaverse/holdout', partition='seenclass', decorated=True, use_shapanetpart_tuned_prompt=False):
         self.partition = partition
+        self.decorated = decorated
+        self.use_shapenetpart_tuned_prompt = use_shapanetpart_tuned_prompt
         self.data_paths = [f"{data_path}/{partition}/{cat_id}" for cat_id in os.listdir(f"{data_path}/{partition}") if "delete" not in cat_id]
 
     def __getitem__(self, item):
@@ -271,13 +278,21 @@ class Objaverse(Dataset):
         xyz = xyz / np.linalg.norm(xyz, ord=2, axis=1).max().item()
         labels_in = np.load(f"{obj_dir}/labels.npy") - 1 # originally 0 is unlabeled so on so forth
         # now becomes -1
-        with open(f"{obj_dir}/label_map.json") as f:
-            mapping = json.load(f)
-        label_texts = []
-        for i in range(len(mapping)):
-            label_texts.append(mapping[str(i+1)]) # label starts from 1
-        
-        label_texts = [f"{part} of a {cat}" for part in label_texts]
+
+        if self.partition=="shapenetpart" and self.use_shapenetpart_tuned_prompt:
+            # use shapenetpart tuned prompt, we already made sure the ordering is the same
+            label_texts = best_prompt[cat]
+            label_texts.append("other")
+        else:
+            # normal prompt
+            with open(f"{obj_dir}/label_map.json") as f:
+                mapping = json.load(f)
+            label_texts = []
+            for i in range(len(mapping)):
+                label_texts.append(mapping[str(i+1)]) # label starts from 1
+            if self.decorated:
+                label_texts = [f"{part} of a {cat}" for part in label_texts]
+            label_texts.append("other")
         return torch.tensor(xyz).float(), labels_in, label_texts, cat
     
     def __len__(self):

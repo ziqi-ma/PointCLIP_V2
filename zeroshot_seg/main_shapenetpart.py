@@ -13,6 +13,7 @@ from data import ShapeNetPart, ShapeNetPartSmall
 from realistic_projection import Realistic_Projection
 from post_search import search_prompt, search_prompt_partm, search_vweight
 import time
+import numpy as np
 
 PC_NUM = 2048
 
@@ -41,7 +42,7 @@ class Extractor(torch.nn.Module):
         return is_seen, point_loc_in_img, x
 
 
-def extract_feature_maps(model_name, data_path, class_choice, device):
+def extract_feature_maps(model_name, data_path, class_choice, device, apply_rotation=False, subset=False):
     model, _ = clip.load(model_name, device=device)
     model.to(device)
 
@@ -58,8 +59,11 @@ def extract_feature_maps(model_name, data_path, class_choice, device):
     if os.path.exists(os.path.join(save_path, "{}_features.pt".format(mode))):
         pass#return so that when we run diff experiments we don't reuse features
     
-    print('\nStart to extract and save feature maps of class {}...'.format(class_choice))
-    test_loader = DataLoader(ShapeNetPartSmall(data_path, apply_rotation=False, partition=mode, num_points=PC_NUM, class_choice=class_choice),batch_size=1, shuffle=False, drop_last=False)#DataLoader(ShapeNetPart(data_path, partition=mode, num_points=PC_NUM, class_choice=class_choice),batch_size=1, shuffle=False, drop_last=False)
+    #print('\nStart to extract and save feature maps of class {}...'.format(class_choice))
+    if subset:
+        test_loader = DataLoader(ShapeNetPartSmall(data_path, apply_rotation=apply_rotation, partition=mode, num_points=PC_NUM, class_choice=class_choice),batch_size=1, shuffle=False, drop_last=False)
+    else:
+        test_loader = DataLoader(ShapeNetPart(data_path, apply_rotation=apply_rotation, partition=mode, num_points=PC_NUM, class_choice=class_choice),batch_size=1, shuffle=False, drop_last=False)
     feat_store, label_store, pc_store = [], [], []
     ifseen_store, pointloc_store = [], []
     for data in tqdm(test_loader):
@@ -100,15 +104,20 @@ def main(args):
     classes = ['airplane', 'bag', 'cap', 'car', 'chair', 'earphone', 'guitar',
                 'knife', 'lamp', 'laptop', 'motorbike', 'mug', 'pistol', 'rocket',
                 'skateboard', 'table']
+    all_mious = []
     for class_choice in classes:
 
         # extract and save feature maps, labels, point locations
-        extract_feature_maps(model_name, data_path, class_choice, device)
+        extract_feature_maps(model_name, data_path, class_choice, device, args.apply_rotation, args.subset)
 
         # test or post search prompt and view weights
-        prompts = search_prompt(class_choice, model_name, only_evaluate=only_evaluate)
-        if not only_evaluate:
-            search_vweight(class_choice, model_name, prompts)
+        iou = search_prompt(class_choice, model_name, prompt_mode=args.prompt_mode, only_evaluate=only_evaluate)
+        
+        all_mious.append(iou)
+        #if not only_evaluate:
+            #search_vweight(class_choice, model_name, prompts)
+    all_mean_iou = np.mean(all_mious)
+    print(f"mean iou: {all_mean_iou}")
 
 
 if __name__ == '__main__':
@@ -117,6 +126,9 @@ if __name__ == '__main__':
     parser.add_argument('--datasetpath', default='/data/ziqi/shapenetpart')
     parser.add_argument('--onlyevaluate', default=True)
     args = parser.parse_args()
+    args.apply_rotation = True
+    args.subset = True
+    args.prompt_mode = "decorated" # tuned means the weird prompt tuned by pointclipv2, part means just querying with part name, decorated means querying with {part} of a {object}
     stime = time.time()
     main(args)
     etime = time.time()

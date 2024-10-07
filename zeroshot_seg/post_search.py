@@ -30,7 +30,8 @@ seg_num = [4, 2, 2, 4, 4, 3, 3, 2, 2, 2, 6, 2, 3, 3, 3, 3, # shapenet-part
            2, 3, 3, 2, 2, 1, 3] # partnet
 index_start = [0, 4, 6, 8, 12, 16, 19, 22, 24, 28, 30, 36, 38, 41, 44, 47]
 
-def textual_encoder(clip_model, class_choice, searched_prompt=None):
+
+def get_shapenetpart_tuned_prompt(clip_model, class_choice, searched_prompt=None):
     if not searched_prompt:
         sents = []
         sents = best_prompt[class_choice]
@@ -40,17 +41,42 @@ def textual_encoder(clip_model, class_choice, searched_prompt=None):
     text_feat = clip_model.encode_text(prompts)
     return text_feat, sents
 
+def get_shapenetpart_generic_prompt(clip_model, class_choice, decorated = True):
+    parts = cat2part[class_choice]
+    if decorated:
+        sents = [f"{part} of a {class_choice}" for part in parts]
+    else:
+        sents = parts
+    prompts = torch.cat([clip.tokenize(p) for p in sents]).cuda()
+    text_feat = clip_model.encode_text(prompts)
+    return text_feat, sents
+
+
+def get_partnete_generic_prompt(clip_model, class_choice, decorated = True):
+    with open(f"/data/ziqi/partnet-mobility/PartNetE_meta.json") as f:
+        all_mapping = json.load(f)
+        parts = all_mapping[class_choice]
+    if decorated:
+        sents = [f"{part} of a {class_choice}" for part in parts]
+    else:
+        sents = parts
+    sents.append("other")
+    prompts = torch.cat([clip.tokenize(p) for p in sents]).cuda()
+    text_feat = clip_model.encode_text(prompts)
+    return text_feat, sents
+
+
 def read_prompts():
     f = open('prompts/shapenetpart_700.json')
     data = json.load(f)
     return data
 
 @torch.no_grad()
-def search_prompt(class_choice, model_name, searched_prompt=None, only_evaluate=True):    
+def search_prompt(class_choice, model_name, prompt_mode="tuned", searched_prompt=None, only_evaluate=True):    
     output_path = 'output/{}/{}'.format(model_name.replace('/', '_'), class_choice)
     
     # read saved feature maps, labels, point locations
-    print("\nReading saved feature maps of class {} ...".format(class_choice))
+    #print("\nReading saved feature maps of class {} ...".format(class_choice))
     test_feat = torch.load(osp.join(output_path, "test_features.pt")).cuda()
     test_label = torch.load(osp.join(output_path, "test_labels.pt")) - index_start[cat2id[class_choice]]
     test_ifseen = torch.load(osp.join(output_path, "test_ifseen.pt"))
@@ -60,7 +86,15 @@ def search_prompt(class_choice, model_name, searched_prompt=None, only_evaluate=
     # encoding textual features
     clip_model, _ = clip.load(model_name)
     clip_model.eval()
-    text_feat, prompts = textual_encoder(clip_model, class_choice, searched_prompt)
+    
+    if prompt_mode == "tuned":
+        text_feat, prompts = get_shapenetpart_tuned_prompt(clip_model, class_choice, searched_prompt)
+    elif prompt_mode == "decorated":
+        text_feat, prompts = get_shapenetpart_generic_prompt(clip_model, class_choice, decorated = True)
+    elif prompt_mode == "part":
+        text_feat, prompts = get_shapenetpart_generic_prompt(clip_model, class_choice, decorated = False)
+    else:
+        raise Exception("unknown prompt mode!")
     text_feat = text_feat / text_feat.norm(dim=-1, keepdim=True)
     
     vweights = torch.Tensor(best_vweight[class_choice]).cuda()
@@ -69,7 +103,7 @@ def search_prompt(class_choice, model_name, searched_prompt=None, only_evaluate=
     
     if only_evaluate:
         print('\nFor class {}, part segmentation Acc: {}, IoU: {}.\n'.format(class_choice, acc, iou))
-        return
+        return iou
     
     print("\n***** Searching for prompts *****\n")
     print('\nBefore prompt search, Acc: {}, IoU: {}.\n'.format(acc, iou))    
@@ -98,7 +132,7 @@ def search_prompt(class_choice, model_name, searched_prompt=None, only_evaluate=
 
 
 @torch.no_grad()
-def search_prompt_partm(class_choice, model_name, test_feat, test_label, test_ifseen, test_pointloc, searched_prompt=None, only_evaluate=True):    
+def search_prompt_partm(class_choice, model_name, test_feat, test_label, test_ifseen, test_pointloc, decorated=True, searched_prompt=None, only_evaluate=True):    
     # output_path = 'output/{}/{}'.format(model_name.replace('/', '_'), class_choice)
     
     # read saved feature maps, labels, point locations
@@ -112,10 +146,10 @@ def search_prompt_partm(class_choice, model_name, test_feat, test_label, test_if
     # encoding textual features
     clip_model, _ = clip.load(model_name)
     clip_model.eval()
-    text_feat, prompts = textual_encoder(clip_model, class_choice, searched_prompt)
+    text_feat, prompts = get_partnete_generic_prompt(clip_model, class_choice, decorated = decorated)
     text_feat = text_feat / text_feat.norm(dim=-1, keepdim=True)
     
-    vweights = torch.Tensor([1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00]).cuda()#torch.Tensor(best_vweight[class_choice]).cuda()
+    vweights = torch.ones(10).cuda()
     part_num = text_feat.shape[0]
     acc, iou = run_epoch_partnetm(vweights, test_feat, test_label, test_ifseen, test_pointloc, text_feat, part_num, class_choice, model_name)
     

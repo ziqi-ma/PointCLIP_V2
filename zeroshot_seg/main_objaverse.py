@@ -11,7 +11,7 @@ warnings.filterwarnings("ignore")
 from best_param import *
 from data import ShapeNetPart, PartNetMobility, Objaverse
 from realistic_projection import Realistic_Projection
-from post_search import textual_encoder, eval_sample_objaverse
+from post_search import eval_sample_objaverse
 import time
 import numpy as np
 
@@ -41,7 +41,7 @@ class Extractor(torch.nn.Module):
         return is_seen, point_loc_in_img, x
 
 
-def eval_objs(model_name, partition, device):
+def eval_objs(model_name, partition, device, decorated=True, use_shapenetpart_tuned_prompt=False):
     model, _ = clip.load(model_name, device=device)
     model.to(device)
 
@@ -49,7 +49,7 @@ def eval_objs(model_name, partition, device):
     segmentor = segmentor.to(device)
     segmentor.eval()
 
-    test_loader = DataLoader(Objaverse(partition=partition), batch_size=1, shuffle=False, drop_last=False)
+    test_loader = DataLoader(Objaverse(partition=partition, decorated=decorated, use_shapanetpart_tuned_prompt=use_shapenetpart_tuned_prompt), batch_size=1, shuffle=False, drop_last=False)
     acc_store = []
     iou_store = []
     cat_acc = {}
@@ -61,10 +61,10 @@ def eval_objs(model_name, partition, device):
         with torch.no_grad():
             is_seen, point_loc_in_img, feat = segmentor(pc)
             # encoding textual features
-            label_texts_ordered.append("other")
             clip_model, _ = clip.load(model_name)
             clip_model.eval()
-            text_feat, prompts = textual_encoder(clip_model, "", label_texts_ordered)
+            prompts = torch.cat([clip.tokenize(p) for p in label_texts_ordered]).cuda()
+            text_feat = clip_model.encode_text(prompts)
             text_feat = text_feat / text_feat.norm(dim=-1, keepdim=True)
             acc, iou = eval_sample_objaverse(feat, label, is_seen, point_loc_in_img, text_feat, len(label_texts_ordered)-1)
         acc_store.append(acc.item())
@@ -104,8 +104,9 @@ def main(args):
     model_name = args.modelname
 
     # extract and save feature maps, labels, point locations
-    eval_objs(model_name, "unseen", device)
-    #eval_objs(model_name, "shapenetpart", device)
+    #eval_objs(model_name, "seenclass", device, decorated=False, use_shapenetpart_tuned_prompt=False)
+    #eval_objs(model_name, "unseen", device, decorated=False, use_shapenetpart_tuned_prompt=False)
+    eval_objs(model_name, "shapenetpart", device, decorated=False, use_shapenetpart_tuned_prompt=True)
 
 
 if __name__ == '__main__':
