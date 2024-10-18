@@ -487,7 +487,7 @@ def eval_sample_objaverse(feat, label, is_seen, point_loc, text_feat, part_num):
     
     # calculating iou
     part_ious = []
-    eval_part_num = int(np.max([label.max(), point_seg.max()]))+1
+    eval_part_num = int(np.max([label.max(), point_seg.max()]))+1 # this is the corner case where number of prompts passed in could be more than gt, in which case we take max
     for part in range(eval_part_num):
         I = np.sum(np.logical_and(point_seg == part, label == part))
         U = np.sum(np.logical_or(point_seg == part, label == part))

@@ -129,8 +129,8 @@ def main(args):
 
     # extract and save feature maps, labels, point locations
     #eval_objs(model_name, "seenclass", device, decorated=True, use_shapenetpart_tuned_prompt=False)
-    eval_objs(model_name, "unseen", device, decorated=False, use_shapenetpart_tuned_prompt=False, visualize=False)
-    #eval_objs(model_name, "shapenetpart", device, decorated=False, use_shapenetpart_tuned_prompt=False, visualize=False)
+    #eval_objs(model_name, "unseen", device, decorated=False, use_shapenetpart_tuned_prompt=False, visualize=False)
+    eval_objs(model_name, "shapenetpart", device, decorated=False, use_shapenetpart_tuned_prompt=True, visualize=False)
 
 
 if __name__ == '__main__':
