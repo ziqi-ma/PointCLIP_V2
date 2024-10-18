@@ -16,12 +16,13 @@ cat2part = {'airplane': ['body','wing','tail','engine or frame'], 'bag': ['handl
             'car': ['roof','hood','wheel or tire','body'],
             'chair': ['back','seat pad','leg','armrest'], 'earphone': ['earcup','headband','data wire'], 
             'guitar': ['head or tuners','neck','body'], 
-            'knife': ['blade', 'handle'], 'lamp': ['leg or wire','lampshade'], 
+            'knife': ['blade', 'handle'], 'lamp': ['base','lampshade', 'fixing bracket', 'stem'], 
             'laptop': ['keyboard','screen or monitor'], 
             'motorbike': ['gas tank','seat','wheel','handles or handlebars','light','engine or frame'], 'mug': ['handle', 'cup'], 
             'pistol': ['barrel', 'handle', 'trigger and guard'], 
             'rocket': ['body','fin','nose cone'], 'skateboard': ['wheel','deck','belt for foot'], 'table': ['desktop','leg or support','drawer'],
             'Bottle': ['lid', 'other']}
+'''
 id2part2cat = [['body', 'airplane'], ['wing', 'airplane'], ['tail', 'airplane'], ['engine or frame', 'airplane'], ['handle', 'bag'], ['body', 'bag'], 
             ['panels or crown', 'cap'], ['visor or peak', 'cap'],
             ['roof', 'car'], ['hood', 'car'], ['wheel or tire',  'car'], ['body', 'car'],
@@ -34,7 +35,7 @@ id2part2cat = [['body', 'airplane'], ['wing', 'airplane'], ['tail', 'airplane'],
             ['barrel', 'pistol'], ['handle', 'pistol'], ['trigger and guard', 'pistol'], ['body', 'rocket'], ['fin', 'rocket'], ['nose cone', 'rocket'], 
             ['wheel', 'skateboard'], ['deck',  'skateboard'], ['belt for foot', 'skateboard'], 
             ['desktop', 'table'], ['leg or support', 'table'], ['drawer''table']]
-
+'''
 
 def download_shapenetpart(data_path):
     if not os.path.exists(data_path):
@@ -267,7 +268,7 @@ class Objaverse(Dataset):
         self.partition = partition
         self.decorated = decorated
         self.use_shapenetpart_tuned_prompt = use_shapanetpart_tuned_prompt
-        self.data_paths = [f"{data_path}/{partition}/{cat_id}" for cat_id in os.listdir(f"{data_path}/{partition}") if "delete" not in cat_id]
+        self.data_paths = [f"{data_path}/{partition}/{cat_id}" for cat_id in sorted(os.listdir(f"{data_path}/{partition}"))]
 
     def __getitem__(self, item):
         obj_dir = self.data_paths[item]
@@ -281,8 +282,7 @@ class Objaverse(Dataset):
 
         if self.partition=="shapenetpart" and self.use_shapenetpart_tuned_prompt:
             # use shapenetpart tuned prompt, we already made sure the ordering is the same
-            label_texts = best_prompt[cat]
-            label_texts.append("other")
+            label_texts = best_prompt[cat]+ ["other"]
         else:
             # normal prompt
             with open(f"{obj_dir}/label_map.json") as f:

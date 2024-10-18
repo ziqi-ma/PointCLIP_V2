@@ -104,7 +104,7 @@ Save labels: =============================
 
 Reading saved feature maps of class lamp ...
 
-For class lamp, part segmentation Acc: 31.0693359375, IoU: 22.65022518495349.
+For class lamp, part segmentation Acc: 31.025392532348633, IoU: 14.98289532940674.
 
 
 Start to extract and save feature maps of class laptop...

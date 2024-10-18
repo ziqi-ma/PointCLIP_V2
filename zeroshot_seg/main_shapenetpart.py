@@ -128,7 +128,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     args.apply_rotation = True
     args.subset = True
-    args.prompt_mode = "decorated" # tuned means the weird prompt tuned by pointclipv2, part means just querying with part name, decorated means querying with {part} of a {object}
+    args.prompt_mode = "part" # tuned means the weird prompt tuned by pointclipv2, part means just querying with part name, decorated means querying with {part} of a {object}
     stime = time.time()
     main(args)
     etime = time.time()

@@ -2,7 +2,7 @@ import torch
 import numpy as np
 import torch.nn.functional as F
 
-seg_num = [4, 2, 2, 4, 4, 3, 3, 2, 2, 2, 6, 2, 3, 3, 3, 3, # shapenet-part
+seg_num = [4, 2, 2, 4, 4, 3, 3, 2, 4, 2, 6, 2, 3, 3, 3, 3, # shapenet-part
            1, 1, 1, 2, 1, 5, 1, 4, 2, 2, 3, 2, 2, 1, 1, 3, 2, 2, 1,
            4, 5, 3, 4, 3, 2, 2, 2, 1, 1, 2, 1, 3, 3, 2, 3, 2, 1, 6,
            2, 3, 3, 2, 2, 1, 3] # partnet

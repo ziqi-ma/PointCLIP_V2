@@ -41,7 +41,7 @@ For class knife, part segmentation Acc: 57.578128814697266, IoU: 39.090539289127
 Save feature: ============================
 Save labels: =============================
 
-For class lamp, part segmentation Acc: 46.2939453125, IoU: 42.70069478434784.
+For class lamp, part segmentation Acc: 16.23046875, IoU: 8.999242910334845.
 
 Save feature: ============================
 Save labels: =============================
@@ -78,5 +78,5 @@ Save labels: =============================
 
 For class table, part segmentation Acc: 36.2451171875, IoU: 15.340315009042587.
 
-mean iou: 19.01879357692802
+mean iou: 16.91245283
 83.89021348953247

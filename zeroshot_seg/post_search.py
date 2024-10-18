@@ -4,10 +4,12 @@ import torch
 import numpy as np
 import os.path as osp
 import scipy.io as sio
-
 from best_param import *
+import torch.nn.functional as F
 from data import id2cat, cat2part
 from util import calculate_shape_IoU
+import open3d as o3d
+import plotly.graph_objects as go
 
 #PC_NUM = 2048 this changes for other datasets
 
@@ -24,11 +26,67 @@ cat2id = {'airplane': 0, 'bag': 1, 'cap': 2, 'car': 3, 'chair': 4,
             "Safe": 47, "Scissors": 48, "Stapler": 49, "StorageFurniture": 50, "Suitcase": 51,
             "Switch": 52, "Table": 53, "Toaster": 54, "Toilet": 55, "TrashCan": 56, "USB": 57,
             "WashingMachine": 58, "Window": 59, "Door": 60}
-seg_num = [4, 2, 2, 4, 4, 3, 3, 2, 2, 2, 6, 2, 3, 3, 3, 3, # shapenet-part
+seg_num = [4, 2, 2, 4, 4, 3, 3, 2, 4, 2, 6, 2, 3, 3, 3, 3, # shapenet-part
            1, 1, 1, 2, 1, 5, 1, 4, 2, 2, 3, 2, 2, 1, 1, 3, 2, 2, 1,
            4, 5, 3, 4, 3, 2, 2, 2, 1, 1, 2, 1, 3, 3, 2, 3, 2, 1, 6,
            2, 3, 3, 2, 2, 1, 3] # partnet
 index_start = [0, 4, 6, 8, 12, 16, 19, 22, 24, 28, 30, 36, 38, 41, 44, 47]
+
+def visualize_pts(points, colors):
+    '''
+    pcd = o3d.geometry.PointCloud()
+    pcd.points = o3d.utility.Vector3dVector(pts.cpu().numpy())
+    pcd.colors = o3d.utility.Vector3dVector(colors.cpu().numpy())
+    o3d.visualization.draw_plotly([pcd],
+                                  front=[0, 0, 1],
+                                  lookat=[0, 0, 1],
+                                  up=[0, 1, 0])
+    '''
+    points = points.numpy()
+    fig = go.Figure(data=[go.Scatter3d(
+        x=points[:, 0],
+        y=points[:, 1],
+        z=points[:, 2],
+        mode='markers',
+        marker=dict(
+            size=2,
+            color=(colors.numpy()*255).astype(int),  # Use RGB colors
+            opacity=0.8
+        ))])
+    x_min, x_max = points[:, 0].min(), points[:, 0].max()
+    y_min, y_max = points[:, 1].min(), points[:, 1].max()
+    z_min, z_max = points[:, 2].min(), points[:, 2].max()
+    fig.update_layout(
+        scene=dict(
+            xaxis=dict(title='x', range=[x_min, x_max]),
+            yaxis=dict(title='y', range=[y_min, y_max]),
+            zaxis=dict(title='z', range=[z_min, z_max]),
+            aspectmode='manual',
+            aspectratio=dict(
+                x=(x_max - x_min),
+                y=(y_max - y_min),
+                z=(z_max - z_min)
+            )
+        ),
+        scene_camera=dict(
+            up=dict(x=0, y=1, z=0)  # Adjust these values for your point cloud
+        )
+    )
+    fig.show()
+    
+def visualize_pt_labels(pts, labels): # pts is n*3, colors is n, 0 - n-1 where 0 is unlabeled
+    part_num = labels.max()
+    cmap_matrix = torch.tensor([[1,1,1], [1,1,0], [0,1,0], [0,0,1], [1,0,0], [1,0,1],
+                [0,1,1], [0.5,0.5,0.5], [0.5,0.5,0], [0.5,0,0.5],[0,0.5,0.5],
+                [0.1,0.2,0.3],[0.2,0.5,0.3], [0.6,0.3,0.2], [0.5,0.3,0.5],
+                [0.6,0.7,0.2],[0.5,0.8,0.3]])[:part_num+1,:]
+    colors = ["white", "yellow", "green", "blue", "red", "magenta", "cyan","grey", "olive",
+                "purple", "teal", "navy", "darkgreen", "brown", "pinkpurple", "yellowgreen", "limegreen"]
+    caption_list=[f"{i}:{colors[i]}" for i in range(part_num+1)]
+    onehot = F.one_hot(labels.long(), num_classes=part_num+1) * 1.0 # n_pts, part_num+1, each row 00.010.0, first place is unlabeled (0 originally)
+    pts_rgb = torch.matmul(onehot, cmap_matrix) # n_pts,3
+    visualize_pts(pts, pts_rgb)
+    print(caption_list)
 
 
 def get_shapenetpart_tuned_prompt(clip_model, class_choice, searched_prompt=None):
@@ -77,6 +135,7 @@ def search_prompt(class_choice, model_name, prompt_mode="tuned", searched_prompt
     
     # read saved feature maps, labels, point locations
     #print("\nReading saved feature maps of class {} ...".format(class_choice))
+    test_pc = torch.load(osp.join(output_path, "test_pc.pt")).cuda()
     test_feat = torch.load(osp.join(output_path, "test_features.pt")).cuda()
     test_label = torch.load(osp.join(output_path, "test_labels.pt")) - index_start[cat2id[class_choice]]
     test_ifseen = torch.load(osp.join(output_path, "test_ifseen.pt"))
@@ -99,7 +158,7 @@ def search_prompt(class_choice, model_name, prompt_mode="tuned", searched_prompt
     
     vweights = torch.Tensor(best_vweight[class_choice]).cuda()
     part_num = text_feat.shape[0]
-    acc, iou = run_epoch(vweights, test_feat, test_label, test_ifseen, test_pointloc, text_feat, part_num, class_choice, model_name)
+    acc, iou = run_epoch(vweights, test_feat, test_label, test_ifseen, test_pointloc, text_feat, part_num, class_choice, model_name, visualize=False, pc=test_pc)
     
     if only_evaluate:
         print('\nFor class {}, part segmentation Acc: {}, IoU: {}.\n'.format(class_choice, acc, iou))
@@ -227,7 +286,7 @@ def search_vweight(class_choice, model_name, searched_prompt=None):
     return vweights
 
                     
-def run_epoch(vweights, val_feat, val_label, val_ifseen, val_pointloc, text_feat, part_num, class_choice, model_name):
+def run_epoch(vweights, val_feat, val_label, val_ifseen, val_pointloc, text_feat, part_num, class_choice, model_name, visualize=False, pc=None):
     
     val_size = val_feat.shape[0]
     bs = 30
@@ -282,6 +341,17 @@ def run_epoch(vweights, val_feat, val_label, val_ifseen, val_pointloc, text_feat
     
     output_path = 'output/{}/{}'.format(model_name.replace('/', '_'), class_choice)
     torch.save(pred_seg,  osp.join(output_path, "test_segpred.pt"))
+
+
+    if visualize:
+        for i in [2]:
+        #i = 0 # just visualize the first instance
+            shape_ious, category = calculate_shape_IoU(pred_seg[i,:].unsqueeze(0).cpu().numpy(), label_seg[i,:].unsqueeze(0).cpu().numpy(), class_label, class_choice, eva=True)
+            print(shape_ious)
+
+            visualize_pt_labels(pc[i,:,:].cpu(), label_seg[i,:].cpu()+1)
+            visualize_pt_labels(pc[i,:,:].cpu(), pred_seg[i,:].cpu()+1) # +1 so we don't have white
+
     
     # calculating segmentation acc
     ratio = (pred_seg == label_seg)
@@ -417,7 +487,8 @@ def eval_sample_objaverse(feat, label, is_seen, point_loc, text_feat, part_num):
     
     # calculating iou
     part_ious = []
-    for part in range(part_num):
+    eval_part_num = int(np.max([label.max(), point_seg.max()]))+1
+    for part in range(eval_part_num):
         I = np.sum(np.logical_and(point_seg == part, label == part))
         U = np.sum(np.logical_or(point_seg == part, label == part))
         if U == 0:
@@ -426,5 +497,4 @@ def eval_sample_objaverse(feat, label, is_seen, point_loc, text_feat, part_num):
             iou = I / float(U)
             part_ious.append(iou)
     mean_iou = np.mean(part_ious)*100.
-    return acc, mean_iou
-
+    return acc, mean_iou, point_seg
